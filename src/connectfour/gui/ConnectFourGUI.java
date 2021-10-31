@@ -22,9 +22,12 @@ import java.util.EnumMap;
  * A JavaFX GUI for the Connect Four game.
  *
  * @author RIT CS
- * @author YOUR NAME HERE
+ * @author Trent Wesley
  */
 public class ConnectFourGUI extends Application implements Observer<ConnectFourBoard> {
+    private Image empty = new Image(getClass().getResourceAsStream("empty.png"));
+    private Image black = new Image(getClass().getResourceAsStream("Harambe.png"));
+    private Image red = new Image(getClass().getResourceAsStream("knuckles.png"));
 
     @Override
     public void init() {
@@ -38,7 +41,18 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
      * @throws Exception if there is a problem
      */
     public void start( Stage stage ) throws Exception {
-        // TODO
+        BorderPane borderPane = new BorderPane();
+        GridPane gridPane = makeGridPane();
+        borderPane.setCenter(gridPane);
+        Label label = new Label("Black turn");
+        borderPane.setTop(label);
+        BorderPane.setAlignment(label, Pos.CENTER);
+        label = new Label("Moves made: 0\t\t\t\tStatus: NOT_OVER");
+        borderPane.setBottom(label);
+        Scene scene = new Scene(borderPane);
+        stage.setScene(scene);
+        stage.setTitle("ConnectFourGUI");
+        stage.setResizable(true);
         stage.show();
     }
 
@@ -60,5 +74,15 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
      */
     public static void main(String[] args) {
         Application.launch(args);
+    }
+
+    private GridPane makeGridPane(){
+        GridPane gridPane = new GridPane();
+        for (int r = 0; r < 7; r++){
+            for (int c = 0; c < 6; c++){
+                Button button = new Button();
+                button.setGraphic(new ImageView(empty));
+                gridPane.add(button, c, r);}}
+        return gridPane;
     }
 }

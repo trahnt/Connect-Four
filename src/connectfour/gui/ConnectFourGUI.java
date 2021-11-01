@@ -93,11 +93,17 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
         GridPane gridPane = new GridPane();
         for (int c = 0; c < COLS; c++){
             for (int r = 0; r < ROWS; r++){
-                Connect4Button button = new Connect4Button(Player.NONE, r, c);
+                Connect4Button button = new Connect4Button(Player.NONE, c);
                 gridPane.add(button, c, r);}}
         return gridPane;
     }
 
+    /**
+     * Function for when a button gets pressed. If the game is still going and a valid column is clicked,
+     * a checker will be placed.
+     *
+     * @param button button pressed
+     */
     private void buttonPressed(Connect4Button button){
         if (this.board.getGameStatus() == ConnectFourBoard.Status.NOT_OVER){
             Player p = board.getCurrentPlayer();
@@ -105,7 +111,7 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
 
                 for (int row=ROWS-1; row >= 0; --row) {
                     if (board.getContents(row, button.column) == Player.NONE) {
-                        gridPane.add(new Connect4Button(p, row, button.column), button.column, row);
+                        gridPane.add(new Connect4Button(p, button.column), button.column, row);
                         break;}}
 
                 board.makeMove(button.column);
@@ -113,15 +119,19 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
             }}
     }
 
+    /**
+     * Button class
+     */
     private class Connect4Button extends Button{
-        private int row;
         private int column;
-        private Player p;
 
-        public Connect4Button(Player p, int row, int column){
-            this.row = row;
+        /**
+         * Connect4Button constructor
+         * @param p
+         * @param column
+         */
+        public Connect4Button(Player p, int column){
             this.column = column;
-            this.p = p;
             Image image = switch (p) {
                 case P1 -> black;
                 case P2 -> red;

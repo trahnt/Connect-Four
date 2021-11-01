@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import connectfour.model.ConnectFourBoard.Player;
 
 /**
  * A JavaFX GUI for the Connect Four game.
@@ -28,10 +29,17 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
     private Image empty = new Image(getClass().getResourceAsStream("empty.png"));
     private Image black = new Image(getClass().getResourceAsStream("Harambe.png"));
     private Image red = new Image(getClass().getResourceAsStream("knuckles.png"));
+    private BorderPane borderPane;
+    private GridPane gridPane;
+    private ConnectFourBoard board;
+
+    public final static int ROWS = 6;
+    public final static int COLS = 7;
 
     @Override
     public void init() {
-        // TODO
+        this.board = new ConnectFourBoard();
+        board.addObserver(this);
     }
 
     /**
@@ -41,10 +49,10 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
      * @throws Exception if there is a problem
      */
     public void start( Stage stage ) throws Exception {
-        BorderPane borderPane = new BorderPane();
-        GridPane gridPane = makeGridPane();
+        borderPane = new BorderPane();
+        gridPane = makeGridPane();
         borderPane.setCenter(gridPane);
-        Label label = new Label("Black turn");
+        Label label = new Label("Current Player: P1");
         borderPane.setTop(label);
         BorderPane.setAlignment(label, Pos.CENTER);
         label = new Label("Moves made: 0\t\t\t\tStatus: NOT_OVER");
@@ -64,7 +72,12 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
      */
     @Override
     public void update(ConnectFourBoard connectFourBoard) {
-        // TODO
+
+        Label label = new Label("Current Player: " + board.getCurrentPlayer());
+        borderPane.setTop(label);
+        BorderPane.setAlignment(label, Pos.CENTER);
+        borderPane.setBottom(new Label("Moves Made: " + board.getMovesMade() + "\t\t\t\tStatus: " +
+                board.getGameStatus()));
     }
 
     /**
@@ -78,11 +91,44 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
 
     private GridPane makeGridPane(){
         GridPane gridPane = new GridPane();
-        for (int r = 0; r < 7; r++){
-            for (int c = 0; c < 6; c++){
-                Button button = new Button();
-                button.setGraphic(new ImageView(empty));
-                gridPane.add(button, c, r);}}
+        for (int c = 0; c < COLS; c++){
+            for (int r = 0; r < ROWS; r++){
+                Connect4Button button = new Connect4Button(Player.NONE, r, c);
+                gridPane.add(button, c, r);
+            }}
         return gridPane;
+    }
+
+    private void buttonPressed(Connect4Button button){
+        if (this.board.getGameStatus() == ConnectFourBoard.Status.NOT_OVER){
+            Player p = board.getCurrentPlayer();
+            if (board.isValidMove(button.column)){
+
+                for (int row=ROWS-1; row >= 0; --row) {
+                    if (board.getContents(row, button.column) == Player.NONE) {
+                        gridPane.add(new Connect4Button(p, row, button.column), button.column, row);
+                        break;}}
+
+                board.makeMove(button.column);
+                update(board);
+            }}
+    }
+
+    private class Connect4Button extends Button{
+        private int row;
+        private int column;
+        private Player p;
+
+        public Connect4Button(Player p, int row, int column){
+            this.row = row;
+            this.column = column;
+            this.p = p;
+            Image image = switch (p) {
+                case P1 -> black;
+                case P2 -> red;
+                default -> empty;
+            };
+            this.setOnAction(event -> buttonPressed(this));
+            this.setGraphic(new ImageView(image));}
     }
 }

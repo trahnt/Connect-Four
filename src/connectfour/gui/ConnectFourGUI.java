@@ -94,8 +94,7 @@ public class ConnectFourGUI extends Application implements Observer<ConnectFourB
         for (int c = 0; c < COLS; c++){
             for (int r = 0; r < ROWS; r++){
                 Connect4Button button = new Connect4Button(Player.NONE, r, c);
-                gridPane.add(button, c, r);
-            }}
+                gridPane.add(button, c, r);}}
         return gridPane;
     }
 
